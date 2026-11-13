@@ -1,0 +1,138 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for seat node
+struct Seat {
+    int seatNumber;
+    int status; // 0 = Available, 1 = Booked
+    struct Seat *next;
+};
+
+struct Seat *head = NULL;
+
+// Create seats
+void createSeats(int n) {
+    struct Seat *temp, *newNode;
+    for (int i = 1; i <= n; i++) {
+        newNode = (struct Seat *)malloc(sizeof(struct Seat));
+        newNode->seatNumber = i;
+        newNode->status = 0;
+        newNode->next = NULL;
+
+        if (head == NULL) {
+            head = newNode;
+            temp = head;
+        } else {
+            temp->next = newNode;
+            temp = newNode;
+        }
+    }
+}
+
+// Display seats
+void displaySeats() {
+    struct Seat *temp = head;
+    printf("\nSeat Status:\n");
+    while (temp != NULL) {
+        printf("Seat %d : %s\n",
+            temp->seatNumber,
+            temp->status == 0 ? "Available" : "Booked");
+        temp = temp->next;
+    }
+}
+
+// Book a single seat
+void bookSeat(int seatNo) {
+    struct Seat *temp = head;
+    while (temp != NULL) {
+        if (temp->seatNumber == seatNo) {
+            if (temp->status == 0) {
+                temp->status = 1;
+                printf("Seat %d booked successfully!\n", seatNo);
+            } else {
+                printf("Seat %d is already booked.\n", seatNo);
+            }
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Invalid seat number.\n");
+}
+
+// Book multiple seats
+void bookMultipleSeats(int count) {
+    int seatNo;
+    for (int i = 1; i <= count; i++) {
+        printf("Enter seat number %d to book: ", i);
+        scanf("%d", &seatNo);
+        bookSeat(seatNo);
+    }
+}
+
+// Cancel seat booking
+void cancelSeat(int seatNo) {
+    struct Seat *temp = head;
+    while (temp != NULL) {
+        if (temp->seatNumber == seatNo) {
+            if (temp->status == 1) {
+                temp->status = 0;
+                printf("Booking for seat %d cancelled successfully!\n", seatNo);
+            } else {
+                printf("Seat %d is already available.\n", seatNo);
+            }
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Invalid seat number.\n");
+}
+
+int main() {
+    int choice, seatNo, count;
+    createSeats(5);
+
+    do {
+        printf("\n--- Movie Theatre Seating System ---\n");
+        printf("1. View Seats\n");
+        printf("2. Book One Seat\n");
+        printf("3. Book Multiple Seats\n");
+        printf("4. Cancel Booking\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                displaySeats();
+                break;
+
+            case 2:
+                printf("Enter seat number to book: ");
+                scanf("%d", &seatNo);
+                bookSeat(seatNo);
+                break;
+
+            case 3:
+                printf("How many seats do you want to book? ");
+                scanf("%d", &count);
+                bookMultipleSeats(count);
+                break;
+
+            case 4:
+                printf("Enter seat number to cancel: ");
+                scanf("%d", &seatNo);
+                cancelSeat(seatNo);
+                break;
+
+            case 5:
+                printf("Thank you! Exiting program.\n");
+                break;
+
+            default:
+                printf("Invalid choice. Try again.\n");
+        }
+
+    } while (choice != 5);
+
+    return 0;
+}
